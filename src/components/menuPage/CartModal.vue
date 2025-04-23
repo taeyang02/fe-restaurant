@@ -10,7 +10,7 @@
           </div>
           <button id="closeCartModal" type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body scrollable-body">
           <template v-if="cart.length === 0">
             <p>Chưa chọn món nào.</p>
           </template>
@@ -136,6 +136,11 @@ function closeQuantityCart() {
 .modal-footer .btn-danger,
 .modal-footer .btn-success {
   flex-grow: 1;
+}
+
+.scrollable-body {
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 </style>
