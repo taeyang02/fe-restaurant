@@ -1,5 +1,5 @@
 <template>
-  <button data-bs-toggle="modal" data-bs-target="#cartModal" class="btn btn-primary position-fixed bottom-0 end-0 m-3 shadow rounded-circle
+  <button id="menu-button" data-bs-toggle="modal" data-bs-target="#cartModal" class="btn btn-primary position-fixed bottom-0 end-0 m-3 shadow rounded-circle
    d-flex justify-content-center align-items-center position-relative z-1"
           style="width: 70px; height: 70px; font-size: 1.6rem;">
     <i class="bi bi-cart-fill text-white"></i>

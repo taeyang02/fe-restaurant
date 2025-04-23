@@ -18,6 +18,8 @@
     <CartModal
         :cart="cart"
         @submitOrder="submitOrder"
+        @updateQuantity="handleUpdateQuantity"
+        @removeItem="handleRemoveItem"
     />
     <!-- Modal -->
     <MenuItem :menuData="filteredMenu" @selectDish="openQuantityModal"/>
@@ -93,6 +95,15 @@ export default {
       this.selectedDish = null
     },
 
+    handleUpdateQuantity({id, quantity}) {
+      const item = this.cart.find(i => i.id === id) // ❌ bỏ `.value`
+      if (item) item.quantity = quantity
+    },
+
+    handleRemoveItem(id) {
+      this.cart = this.cart.filter(item => item.id !== id)
+    },
+
     submitOrder() {
       if (this.cart.length === 0) {
         Swal.fire({icon: 'error', title: 'Lỗi!', text: 'Giỏ hàng trống', timer: 2000, showConfirmButton: false})
@@ -107,7 +118,13 @@ export default {
 
       createOrder(payload).then((res) => {
         if (res.status === 200) {
-          Swal.fire({icon: 'success', title: 'Thành công!', text: 'Món ăn đã được gửi tới quầy thành công. Vui lòng đợi trong giây lát!!!', timer: 2000, showConfirmButton: false})
+          Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: 'Món ăn đã được gửi tới quầy thành công. Vui lòng đợi trong giây lát!!!',
+            timer: 2000,
+            showConfirmButton: false
+          })
           this.cart = []
         } else {
           Swal.fire({icon: 'error', title: 'Lỗi!', text: 'Đặt món thất bại', timer: 2000, showConfirmButton: false})
@@ -130,7 +147,7 @@ export default {
       } else {
         this.closeSearch()
         this.$nextTick(() => {
-          window.scrollTo({ top: this.lastScrollY, behavior: 'auto' })
+          window.scrollTo({top: this.lastScrollY, behavior: 'auto'})
         })
       }
     },
