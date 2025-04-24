@@ -8,3 +8,10 @@ export function createOrder(data) {
         data
     })
 }
+
+export function getAllOrders() {
+    return request({
+        url: '/orders',
+        method: 'get',
+    })
+}

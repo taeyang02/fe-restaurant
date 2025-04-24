@@ -1,24 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import MenuPage from "@/views/MenuPage.vue";
+import AdminOrderPage  from "@/views/AdminOrderPage.vue";
 
 const routes = [
     {
         path: '/',
         name: 'MenuPage',
         component: MenuPage,
-    }
-    // ,
-    // {
-    //     path: '/aaa',
-    //     name: 'CreateOrder',
-    //     component: App,
-    // },
-    // {
-    //     path: '/:pathMatch(.*)*',
-    //     name: 'NotFound',
-    //     component: App,
-    // },
+    },
+    {
+        path: '/order-page',
+        name: 'AdminOrderPage',
+        component: AdminOrderPage,
+    },
 ];
 
 const router = createRouter({

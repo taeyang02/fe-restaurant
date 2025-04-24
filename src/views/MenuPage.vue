@@ -117,6 +117,7 @@ export default {
       }
 
       createOrder(payload).then((res) => {
+        console.log(1, res.data.message)
         if (res.status === 200) {
           Swal.fire({
             icon: 'success',
@@ -127,7 +128,7 @@ export default {
           })
           this.cart = []
         } else {
-          Swal.fire({icon: 'error', title: 'Lỗi!', text: 'Đặt món thất bại', timer: 2000, showConfirmButton: false})
+          Swal.fire({icon: 'error', title: 'Lỗi!', text: res.data.message, timer: 2000, showConfirmButton: false})
         }
       })
 
