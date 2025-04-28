@@ -164,20 +164,25 @@ export default {
         return
       }
 
-      const lowerKeyword = keyword.toLowerCase()
+      const lowerKeywords = keyword
+          .toLowerCase()
+          .split(/\s+/) // Tách thành các từ
+          .filter(k => k) // Bỏ từ rỗng
+
       const seenDishNames = new Set()
 
       this.filteredMenu = this.fullMenuData
           .map(cat => {
             const uniqueDishes = cat.dish.filter(d => {
               const dishNameLower = d.dishName.toLowerCase()
-              if (dishNameLower.includes(lowerKeyword) && !seenDishNames.has(dishNameLower)) {
+              const matchesAll = lowerKeywords.every(kw => dishNameLower.includes(kw))
+              if (matchesAll && !seenDishNames.has(dishNameLower)) {
                 seenDishNames.add(dishNameLower)
                 return true
               }
               return false
             })
-            return uniqueDishes.length > 0 ? {name: cat.name, dish: uniqueDishes} : null
+            return uniqueDishes.length > 0 ? { name: cat.name, dish: uniqueDishes } : null
           })
           .filter(Boolean)
     }
