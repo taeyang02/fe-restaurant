@@ -117,7 +117,6 @@ export default {
       }
 
       createOrder(payload).then((res) => {
-        console.log(1, res.data)
         if (res.status === 200) {
           Swal.fire({
             icon: 'success',
@@ -182,7 +181,7 @@ export default {
               }
               return false
             })
-            return uniqueDishes.length > 0 ? { name: cat.name, dish: uniqueDishes } : null
+            return uniqueDishes.length > 0 ? {name: cat.name, dish: uniqueDishes} : null
           })
           .filter(Boolean)
     }

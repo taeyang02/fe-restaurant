@@ -15,3 +15,12 @@ export function getAllOrders() {
         method: 'get',
     })
 }
+
+
+export function updateDoneOrder(orderNo) {
+    return request({
+        url: `/orders/order-done`,
+        method: 'post',
+        params: { "orderNo": orderNo }
+    });
+}
