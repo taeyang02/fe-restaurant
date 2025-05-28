@@ -1,9 +1,5 @@
-<script setup>
-import MenuPage from './views/MenuPage.vue'
-</script>
-
 <template>
   <main>
-    <MenuPage/>
+    <router-view />
   </main>
 </template>

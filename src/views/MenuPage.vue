@@ -127,8 +127,10 @@ export default {
           })
           this.cart = []
         } else {
-          Swal.fire({icon: 'error', title: 'Lỗi!', text: 'Đặt món thất bại', timer: 2000, showConfirmButton: false})
+          Swal.fire({icon: 'error', title: 'Lỗi!', text: res.data.errors, timer: 2000, showConfirmButton: false})
         }
+      }).catch((err) => {
+        Swal.fire({icon: 'error', title: 'Lỗi!', text: err.errors, timer: 2000, showConfirmButton: false})
       })
 
       const closeBtn = document.getElementById('closeCartModal')
@@ -161,14 +163,19 @@ export default {
         return
       }
 
-      const lowerKeyword = keyword.toLowerCase()
+      const lowerKeywords = keyword
+          .toLowerCase()
+          .split(/\s+/) // Tách thành các từ
+          .filter(k => k) // Bỏ từ rỗng
+
       const seenDishNames = new Set()
 
       this.filteredMenu = this.fullMenuData
           .map(cat => {
             const uniqueDishes = cat.dish.filter(d => {
               const dishNameLower = d.dishName.toLowerCase()
-              if (dishNameLower.includes(lowerKeyword) && !seenDishNames.has(dishNameLower)) {
+              const matchesAll = lowerKeywords.every(kw => dishNameLower.includes(kw))
+              if (matchesAll && !seenDishNames.has(dishNameLower)) {
                 seenDishNames.add(dishNameLower)
                 return true
               }
