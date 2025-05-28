@@ -37,7 +37,8 @@ pipeline {
         stage('Copy dist to deploy-folder') {
             steps {
                 sh """
-                    mkdir -p ${deployFolder}/${projectName}
+                    rm -rf ${deployFolder}/${projectName}/dist
+                    mkdir -p ${deployFolder}/${projectName}/dist
                     cp -r ${distFolder}/* ${deployFolder}/${projectName}/dist
                     rm -rf ${distFolder}
                 """
