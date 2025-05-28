@@ -38,7 +38,7 @@ pipeline {
             steps {
                 sh """
                     mkdir -p ${deployFolder}/${projectName}
-                    cp -r ${distFolder}/* ${deployFolder}/${projectName}/
+                    cp -r ${distFolder}/* ${deployFolder}/${projectName}/dist
                     rm -rf ${distFolder}
                 """
             }
