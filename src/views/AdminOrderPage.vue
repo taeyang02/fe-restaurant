@@ -57,6 +57,7 @@ export default {
   },
   mounted() {
     this.connectSocket();
+    this.loadInitialOrders();
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
   },
   beforeUnmount() {
@@ -66,6 +67,18 @@ export default {
     document.removeEventListener("visibilitychange", this.handleVisibilityChange);
   },
   methods: {
+    async loadInitialOrders() {
+      try {
+        const response = await getAllOrders();
+        this.orderGroups = response.data;
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "❌ Lỗi khi tải danh sách đơn hàng",
+        });
+      }
+    },
     connectSocket() {
       const socketUrl = import.meta.env.VITE_WS_URL;
       const socket = new SockJS(socketUrl);
@@ -76,21 +89,23 @@ export default {
           (frame) => {
             console.log("✅ WebSocket đã kết nối:", frame);
 
-            if (this.isFirstConnect || this.isReconnect) {
-              getAllOrders().then((response) => {
-                this.orderGroups = response.data;
-              });
-            }
-
             this.stompClient.subscribe("/topic/orders", (message) => {
               const groups = JSON.parse(message.body);
 
+              // Nếu reconnect thì clear để tránh lặp đơn (giống logic cũ)
               if (this.isReconnect) {
                 this.orderGroups = [];
+                this.loadInitialOrders(); // gọi lại API khi reconnect
                 this.isReconnect = false;
+                return;
               }
 
-              this.orderGroups.push(...groups);
+              // Push đơn mới nhưng check trùng tránh bị duplicate
+              for (const newGroup of groups) {
+                if (!this.orderGroups.some(g => g.no === newGroup.no)) {
+                  this.orderGroups.push(newGroup);
+                }
+              }
             });
 
             this.isFirstConnect = false;
