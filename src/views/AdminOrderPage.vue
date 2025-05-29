@@ -41,8 +41,8 @@
 </template>
 
 <script>
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 import { getAllOrders, updateDoneOrder } from "@/api/order.js";
 import Swal from "sweetalert2";
 
@@ -62,7 +62,7 @@ export default {
   },
   beforeUnmount() {
     if (this.stompClient) {
-      this.stompClient.disconnect();
+      this.stompClient.deactivate(); // Dùng deactivate thay vì disconnect
     }
     document.removeEventListener("visibilitychange", this.handleVisibilityChange);
   },
@@ -79,41 +79,45 @@ export default {
         });
       }
     },
+
     connectSocket() {
       const socketUrl = import.meta.env.VITE_WS_URL;
-      const socket = new SockJS(socketUrl);
-      this.stompClient = Stomp.over(socket);
 
-      this.stompClient.connect(
-          {},
-          (frame) => {
-            console.log("✅ WebSocket đã kết nối:", frame);
+      // Tạo client mới
+      this.stompClient = new Client({
+        webSocketFactory: () => new SockJS(socketUrl),
+        reconnectDelay: 5000, // Tự động reconnect sau 5s nếu mất kết nối
+        onConnect: () => {
+          console.log("✅ WebSocket đã kết nối");
 
-            this.stompClient.subscribe("/topic/orders", (message) => {
-              const groups = JSON.parse(message.body);
+          this.stompClient.subscribe("/topic/orders", (message) => {
+            const groups = JSON.parse(message.body);
 
-              // Nếu reconnect thì clear để tránh lặp đơn (giống logic cũ)
-              if (this.isReconnect) {
-                this.orderGroups = [];
-                this.loadInitialOrders(); // gọi lại API khi reconnect
-                this.isReconnect = false;
-                return;
+            if (this.isReconnect) {
+              this.orderGroups = [];
+              this.loadInitialOrders();
+              this.isReconnect = false;
+              return;
+            }
+
+            for (const newGroup of groups) {
+              if (!this.orderGroups.some(g => g.no === newGroup.no)) {
+                this.orderGroups.push(newGroup);
               }
+            }
+          });
 
-              // Push đơn mới nhưng check trùng tránh bị duplicate
-              for (const newGroup of groups) {
-                if (!this.orderGroups.some(g => g.no === newGroup.no)) {
-                  this.orderGroups.push(newGroup);
-                }
-              }
-            });
+          this.isFirstConnect = false;
+        },
+        onStompError: (frame) => {
+          console.error("❌ Lỗi STOMP:", frame);
+        },
+        onWebSocketError: (event) => {
+          console.error("❌ WebSocket error event:", JSON.stringify(event, null, 2));
+        }
+      });
 
-            this.isFirstConnect = false;
-          },
-          (error) => {
-            console.error("❌ Không thể kết nối WebSocket:", error);
-          }
-      );
+      this.stompClient.activate();
     },
 
     markOrderDone(groupNo) {
@@ -125,22 +129,22 @@ export default {
             text: 'Good Job!!!',
             timer: 2000,
             showConfirmButton: false
-          })
+          });
           this.orderGroups = this.orderGroups.filter(group => group.no !== groupNo);
         } else {
-          Swal.fire({icon: 'error', title: 'Lỗi!', text: res.data.errors, timer: 2000, showConfirmButton: false})
+          Swal.fire({ icon: 'error', title: 'Lỗi!', text: res.data.errors, timer: 2000, showConfirmButton: false });
         }
       }).catch((err) => {
-        Swal.fire({icon: 'error', title: 'Lỗi!', text: err.errors, timer: 2000, showConfirmButton: false})
-      })
+        Swal.fire({ icon: 'error', title: 'Lỗi!', text: err.errors, timer: 2000, showConfirmButton: false });
+      });
     },
 
     handleVisibilityChange() {
       if (document.visibilityState === "visible") {
         console.log("🔄 Quay lại tab, reconnect WebSocket nếu cần...");
 
-        if (this.stompClient?.connected) {
-          this.stompClient.disconnect(() => {
+        if (this.stompClient && this.stompClient.active) {
+          this.stompClient.deactivate().then(() => {
             console.log("⛔ Socket cũ ngắt, reconnect...");
             this.isReconnect = true;
             this.connectSocket();
@@ -150,8 +154,8 @@ export default {
           this.connectSocket();
         }
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
