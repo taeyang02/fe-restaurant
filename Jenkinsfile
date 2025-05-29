@@ -38,7 +38,6 @@ pipeline {
         stage('Build Project') {
             steps {
                 sh 'npm run build'
-                sh 'ls -l ./dist'
             }
         }
 
