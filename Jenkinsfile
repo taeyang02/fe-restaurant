@@ -57,7 +57,7 @@ pipeline {
                 sh """
                     cd ${deployFolder}/${projectName}
                     docker compose down || true
-                    docker compose up -d --build
+                    docker compose up -d
                 """
             }
         }
