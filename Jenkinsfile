@@ -22,6 +22,13 @@ pipeline {
             }
         }
 
+        stage('Debug Env') {
+            steps {
+                sh 'node -v && npm -v'
+                sh 'printenv'
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
