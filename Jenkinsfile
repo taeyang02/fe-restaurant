@@ -22,6 +22,12 @@ pipeline {
             }
         }
 
+        stage('Update NPM') {
+            steps {
+                sh 'npm install -g npm@11.3.0'
+            }
+        }
+
         stage('Debug Env') {
             steps {
                 sh 'node -v && npm -v'
