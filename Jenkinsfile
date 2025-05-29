@@ -29,13 +29,6 @@ pipeline {
             }
         }
 
-        stage('Clean') {
-            steps {
-                echo '🧹 Cleaning previous build...'
-                sh 'npm run clean || echo "⚠️ Skip clean if not defined"'
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
