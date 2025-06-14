@@ -127,10 +127,10 @@ export default {
           })
           this.cart = []
         } else {
-          Swal.fire({icon: 'error', title: 'Lỗi!', text: res.data.errors, timer: 2000, showConfirmButton: false})
+          Swal.fire({icon: 'error', title: 'Lỗi!', text: res.data.message, timer: 2000, showConfirmButton: false})
         }
       }).catch((err) => {
-        Swal.fire({icon: 'error', title: 'Lỗi!', text: err.errors, timer: 2000, showConfirmButton: false})
+        Swal.fire({icon: 'error', title: 'Lỗi!', text: err.message, timer: 2000, showConfirmButton: false})
       })
 
       const closeBtn = document.getElementById('closeCartModal')

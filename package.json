@@ -13,6 +13,7 @@
     "axios": "^1.8.4",
     "bootstrap": "^5.3.5",
     "bootstrap-icons": "^1.11.3",
+    "cssnano": "^7.0.7",
     "sockjs-client": "^1.6.1",
     "sweetalert2": "^11.17.2",
     "vue": "^3.5.13",
